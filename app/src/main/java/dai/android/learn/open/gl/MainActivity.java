@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
         mGLSurfaceView = new GLSurfaceView(this);
         if (Misc.supportGLESv2(this)) {
             mGLSurfaceView.setEGLContextClientVersion(2);
+            mGLSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
             mGLSurfaceView.setRenderer(new AirHockeyRenderer(this));
             mHasRendererSet = true;
         } else {
