@@ -173,6 +173,8 @@ public class AirHockeyRenderer implements GLSurfaceView.Renderer {
         glViewport(0, 0, width, height);
 
         MatrixHelper.perspectiveM(mProjectMatrix, 45, (float) width / (float) height, 1f, 10f);
+        // MatrixHelper.perspectiveM maybe same as Matrix.perspectiveM
+        //Matrix.perspectiveM(mProjectMatrix,0, 45, (float) width / (float) height, 1f, 10f);
 
         setIdentityM(mModelMatrix, 0);
 
