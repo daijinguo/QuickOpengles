@@ -12,6 +12,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import dai.android.learn.open.gl.R;
+import dai.android.utility.MatrixHelper;
 import dai.android.utility.ShaderHelper;
 import dai.android.utility.TextResourceReader;
 import dai.android.utility.log.Logger;
@@ -31,7 +32,10 @@ import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glUseProgram;
 import static android.opengl.GLES20.glVertexAttribPointer;
 import static android.opengl.GLES20.glViewport;
-import static android.opengl.Matrix.orthoM;
+import static android.opengl.Matrix.multiplyMM;
+import static android.opengl.Matrix.rotateM;
+import static android.opengl.Matrix.setIdentityM;
+import static android.opengl.Matrix.translateM;
 
 public class AirHockeyRenderer implements GLSurfaceView.Renderer {
     private static final String TAG = AirHockeyRenderer.class.getSimpleName();
@@ -41,6 +45,7 @@ public class AirHockeyRenderer implements GLSurfaceView.Renderer {
     private static final String U_MATRIX = "u_Matrix";
 
     private static final int POSITION_COMPONENT_COUNT = 2;
+    // private static final int POSITION_COMPONENT_COUNT = 4;
     private static final int COLOR_COMPONENT_COUNT = 3;
     private static final int BYTES_PER_FLOAT = 4;
     private static final int STRIDE = (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * BYTES_PER_FLOAT;
@@ -49,6 +54,7 @@ public class AirHockeyRenderer implements GLSurfaceView.Renderer {
 
     private final FloatBuffer mVertexData;
     private final float[] mProjectMatrix = new float[16];
+    private final float[] mModelMatrix = new float[16];
 
     private int mProgramId;
 
@@ -66,8 +72,25 @@ public class AirHockeyRenderer implements GLSurfaceView.Renderer {
         // The next three numbers are part of the color: R, G, B
         //
         float[] tableVerticesWithTriangles = {
-                // Order of coordinates: X, Y, R, G, B
+                /// // Order of coordinates: X, Y, Z, W, R, G, B
+                /// // Triangle Fan
+                ///   0f,     0f, 0f, 1.5f,   1f,   1f,   1f,
+                /// -0.5f, -0.8f, 0f,   1f, 0.7f, 0.7f, 0.7f,
+                ///  0.5f, -0.8f, 0f,   1f, 0.7f, 0.7f, 0.7f,
+                ///  0.5f,  0.8f, 0f,   2f, 0.7f, 0.7f, 0.7f,
+                /// -0.5f,  0.8f, 0f,   2f, 0.7f, 0.7f, 0.7f,
+                /// -0.5f, -0.8f, 0f,   1f, 0.7f, 0.7f, 0.7f,
+                ///
+                /// // Line 1
+                /// -0.5f, 0f, 0f, 1.5f, 0f, 1f, 0f, 0f,
+                ///  0.5f, 0f, 0f, 1.5f, 0f, 1f, 0f, 0f,
+                ///
+                /// // Mallets
+                /// 0f, -0.4f, 0f, 1.25f, 0F, 0F, 1F,
+                /// 0f,  0.4f, 0f, 1.75f, 1F, 0F, 0F
 
+
+                // Order of coordinates: X, Y, R, G, B
                 // Triangle Fan
                 0f, 0f, 1f, 1f, 1f,
                 -0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
@@ -149,15 +172,16 @@ public class AirHockeyRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         glViewport(0, 0, width, height);
 
-        final float aspectRatio = width > height ?
-                (float) width / (float) height : (float) height / (float) width;
-        if (width > height) {
-            // Landscape
-            orthoM(mProjectMatrix, 0, -aspectRatio, aspectRatio, -1f, 1f, -1f, 1f);
-        } else {
-            // Portrait or square
-            orthoM(mProjectMatrix, 0, -1f, 1f, -aspectRatio, aspectRatio, -1f, 1f);
-        }
+        MatrixHelper.perspectiveM(mProjectMatrix, 45, (float) width / (float) height, 1f, 10f);
+
+        setIdentityM(mModelMatrix, 0);
+
+        translateM(mModelMatrix, 0, 0f, 0f, -2.5f);
+        rotateM(mModelMatrix, 0, -60f, 1f, 0f, 0f);
+
+        final float[] temp = new float[16];
+        multiplyMM(temp, 0, mProjectMatrix, 0, mModelMatrix, 0);
+        System.arraycopy(temp, 0, mProjectMatrix, 0, temp.length);
     }
 
     @Override
