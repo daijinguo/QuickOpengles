@@ -140,4 +140,24 @@ public final class ShaderHelper {
 
         return validateStatus[0] != 0;
     }
+
+    /**
+     * Helper function that compiles the shaders, links and validates the
+     * program, returning the program ID.
+     */
+    public static int buildProgram(String vertexShaderSource, String fragmentShaderSource) {
+        int program;
+
+        // Compile the shaders.
+        int vertexShader = compileVertexShader(vertexShaderSource);
+        int fragmentShader = compileFragmentShader(fragmentShaderSource);
+
+        // Link them into a shader program.
+        program = linkProgram(vertexShader, fragmentShader);
+
+        boolean result = validateProgram(program);
+        Logger.d(TAG, "OpenGL program has validated");
+
+        return program;
+    }
 }

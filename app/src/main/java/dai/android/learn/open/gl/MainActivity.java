@@ -1,5 +1,7 @@
 package dai.android.learn.open.gl;
 
+// icon http://sc.chinaz.com/tubiao/130803191490.htm
+
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
