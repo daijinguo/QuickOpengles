@@ -52,8 +52,9 @@ public final class ShaderHelper {
 
 
         // Print the shader info log to the Android log output.
-        Logger.v(TAG, "Results of compiling source:"
-                + "\n" + shaderCode + "\n:" + glGetShaderInfoLog(shaderObjectId));
+        String strShaderInfoLog = glGetShaderInfoLog(shaderObjectId);
+        Logger.v(TAG, "Results of compiling source:\t\n"
+                + shaderCode + (null != strShaderInfoLog ? "\nInfo:\n" + strShaderInfoLog : ""));
 
 
         // Verify the compile status.
@@ -156,7 +157,7 @@ public final class ShaderHelper {
         program = linkProgram(vertexShader, fragmentShader);
 
         boolean result = validateProgram(program);
-        Logger.d(TAG, "OpenGL program has validated");
+        Logger.d(TAG, "OpenGL program has validated? " + result);
 
         return program;
     }

@@ -85,6 +85,7 @@ public class AirHockeyRenderer implements GLSurfaceView.Renderer {
         mTextureProgram.useProgram();
         mTextureProgram.setUniforms(mProjectMatrix, mTexture);
         mTable.bindData(mTextureProgram);
+        mTable.draw();
 
 
         // Draw the mallets.
