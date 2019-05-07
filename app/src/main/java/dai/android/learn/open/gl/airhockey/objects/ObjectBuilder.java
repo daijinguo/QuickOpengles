@@ -101,4 +101,47 @@ class ObjectBuilder {
         }
     }
 
+
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    public static GeneratedData createPuck(Geometry.Cylinder puck, int numPoints) {
+        int size = sizeOfCircleInVertices(numPoints) + sizeOfOpenCylinderInVertices(numPoints);
+        ObjectBuilder builder = new ObjectBuilder(size);
+
+        Geometry.Circle puckTop = new Geometry.Circle(puck.Center.translateY(puck.Height / 2F), puck.Radius);
+        builder.appendCircle(puckTop, numPoints);
+        builder.appendOpenCylinder(puck, numPoints);
+
+        return builder.build();
+    }
+
+    public static GeneratedData createMallet(Geometry.Point center, float radius, float height, int numPoints) {
+        int size = sizeOfCircleInVertices(numPoints) * 2 + sizeOfOpenCylinderInVertices(numPoints) * 2;
+
+        ObjectBuilder builder = new ObjectBuilder(size);
+
+        // First, generate the mallet base.
+        float baseHeight = height * 0.25f;
+
+        Geometry.Circle baseCircle = new Geometry.Circle(center.translateY(-baseHeight), radius);
+        Geometry.Cylinder baseCylinder = new Geometry.Cylinder(
+                baseCircle.Center.translateY(-baseHeight / 2F), radius, baseHeight);
+        builder.appendCircle(baseCircle, numPoints);
+        builder.appendOpenCylinder(baseCylinder, numPoints);
+
+        // Now generate the mallet handle.
+        float handleHeight = height * 0.75F;
+        float handleRadius = radius / 3F;
+
+        Geometry.Circle handleCircle = new Geometry.Circle(
+                center.translateY(height * 0.5F), handleRadius);
+        Geometry.Cylinder handleCylinder = new Geometry.Cylinder(
+                handleCircle.Center.translateY(-handleHeight / 2F),
+                handleRadius, handleHeight);
+        builder.appendCircle(handleCircle, numPoints);
+        builder.appendOpenCylinder(handleCylinder, numPoints);
+
+        return builder.build();
+    }
+
 }

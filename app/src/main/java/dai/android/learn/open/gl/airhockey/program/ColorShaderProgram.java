@@ -12,7 +12,11 @@ public class ColorShaderProgram extends ShaderProgram {
 
     // Attribute locations
     private final int location_aPosition;
-    private final int location_aColor;
+    // private final int location_aColor;
+
+    private final int location_uColor;
+
+
 
     public ColorShaderProgram(Context context) {
         super(context, R.raw.shader_vertex_airhockey_simple, R.raw.shader_fragment_airhockey_simple);
@@ -21,19 +25,17 @@ public class ColorShaderProgram extends ShaderProgram {
         location_uMatrix = GLES20.glGetUniformLocation(mProgram, U_MATRIX);
 
         location_aPosition = GLES20.glGetAttribLocation(mProgram, A_POSITION);
-        location_aColor = GLES20.glGetAttribLocation(mProgram, A_COLOR);
+        location_uColor = GLES20.glGetAttribLocation(mProgram, U_COLOR);
     }
 
-    public void setUniforms(float[] matrix) {
+    public void setUniforms(float[] matrix, float r, float g, float b) {
         // Pass the matrix into the shader program.
         GLES20.glUniformMatrix4fv(location_uMatrix, 1, false, matrix, 0);
+        GLES20.glUniform4f(location_uColor, r, g, b, 1f);
     }
 
     public int getPositionAttributeLocation() {
         return location_aPosition;
     }
 
-    public int getColorAttributeLocation() {
-        return location_aColor;
-    }
 }
